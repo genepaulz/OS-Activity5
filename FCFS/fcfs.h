@@ -1,23 +1,49 @@
 #ifndef FCFS_H
 #define FCFS
 
-typedef int qItem;
+struct process{
+	int id;
+	int at;
+	int bt;
+	int wt;
+	int tat;	
+};
+typedef struct process *Process;
+
+Process newProcess(int id, int at, int bt, int wt, int tat);
+void displayProcess(Process p);
+void destroyProcess(Process *p);
+
+struct processList{
+	Process* pl;
+	int count;
+	int size;
+};
+typedef struct processList *ProcessList;
+
+ProcessList newProcessList(int size);
+void addPProcess(ProcessList pl, Process p);
+void addCProcess(ProcessList pl, int id, int at, int bt, int wt, int tat);
+void displayProcessList(ProcessList pl);
+void insertionSort(int arr[], int n);
+void processFCFS(ProcessList pl);
+void destroyProcessList(ProcessList *pl);
 
 typedef struct node *nodeptr;
 struct node{
-	qItem item;
+	Process p;
+	nodeptr prev;
 	nodeptr next;
 };
-
 struct queue{
 	nodeptr front;
 	nodeptr rear;
 };
-
 typedef struct queue *Queue;
+typedef Process qItem;
 
 Queue newQueue();
-void enqueue(Queue q,qItem item);
+void enqueue(Queue q, qItem item);
 void dequeue(Queue q);
 int isEmpty(Queue q);
 void clear(Queue q);
@@ -27,17 +53,4 @@ int contains(Queue q, qItem x);
 void display(Queue q);
 void destroy(Queue *q);
 
-struct process{
-	int id;
-	int bt;
-	int at;
-	int wt;
-	int tat;
-};
-
-typedef struct process Process;
-
-Process newProcess(int id,int bt, int at, int wt, int tat);
-void displayProcess(Process p);
-void processFCFS(Process p[],int TESTSIZE);
 #endif

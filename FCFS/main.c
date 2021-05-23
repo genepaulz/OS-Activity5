@@ -1,27 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fcfs.h"
-#define TESTSIZE 4
+
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 int main(int argc, char *argv[]) {
-	Process p[4] = {
-	//id, bt, at, wt, tat
-		{1,6,0,0,0},
-		{2,8,0,0,0},
-		{3,7,0,0,0},
-		{4,3,0,0,0},
-	};
 
-	displayProcess(p[0]);
-//	displayProcess(p[1]);
-	displayProcess(p[2]);
-//	displayProcess(p[3]);
 	
-	processFCFS(p,TESTSIZE);
+//	ProcessList pl = newProcessList(10);
+//	addCProcess(pl,1,0,6,0,0);
+//	addCProcess(pl,2,0,8,0,0);
+//	addCProcess(pl,3,0,7,0,0);
+//	addCProcess(pl,4,0,3,0,0);
+//	displayProcessList(pl);
+//	printf("	STARTING Processes\n\n");
 	
+	ProcessList pl = newProcessList(10);
+	addCProcess(pl,1,3,4,0,0);
+	addCProcess(pl,2,5,3,0,0);
+	addCProcess(pl,3,0,2,0,0);
+	addCProcess(pl,4,5,1,0,0);
+	addCProcess(pl,5,4,3,0,0);
+	displayProcessList(pl);
+	printf("		STARTING Processes\n\n");
 	
+	processFCFS(pl);
 	
+
+
+	destroyProcessList(&pl);
 
 	return 0;
 }

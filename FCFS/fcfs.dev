@@ -61,7 +61,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=fcfs.c
+FileName=fcfs.h
 CompileCpp=0
 Folder=
 Compile=1
@@ -71,7 +71,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=fcfs.h
+FileName=fcfs.c
 CompileCpp=0
 Folder=
 Compile=1
