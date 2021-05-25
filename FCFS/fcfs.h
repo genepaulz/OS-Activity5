@@ -6,7 +6,8 @@ struct process{
 	int at;
 	int bt;
 	int wt;
-	int tat;	
+	int tat;
+	int index;
 };
 typedef struct process *Process;
 
@@ -27,6 +28,7 @@ void addCProcess(ProcessList pl, int id, int at, int bt, int wt, int tat);
 void displayProcessList(ProcessList pl);
 void insertionSort(int arr[], int n);
 void processFCFS(ProcessList pl);
+void processSJF(ProcessList pl);
 void destroyProcessList(ProcessList *pl);
 
 typedef struct node *nodeptr;
@@ -38,6 +40,7 @@ struct node{
 struct queue{
 	nodeptr front;
 	nodeptr rear;
+	int count;
 };
 typedef struct queue *Queue;
 typedef Process qItem;
@@ -45,6 +48,8 @@ typedef Process qItem;
 Queue newQueue();
 void enqueue(Queue q, qItem item);
 void dequeue(Queue q);
+void sortQueue(Queue q);
+void removeItem(Queue q, qItem item);
 int isEmpty(Queue q);
 void clear(Queue q);
 qItem head(Queue q);

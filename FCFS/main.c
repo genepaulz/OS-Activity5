@@ -5,15 +5,6 @@
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 int main(int argc, char *argv[]) {
-
-	
-//	ProcessList pl = newProcessList(10);
-//	addCProcess(pl,1,0,6,0,0);
-//	addCProcess(pl,2,0,8,0,0);
-//	addCProcess(pl,3,0,7,0,0);
-//	addCProcess(pl,4,0,3,0,0);
-//	displayProcessList(pl);
-//	printf("	STARTING Processes\n\n");
 	
 	ProcessList pl = newProcessList(10);
 	addCProcess(pl,1,3,4,0,0);
@@ -25,10 +16,9 @@ int main(int argc, char *argv[]) {
 	printf("		STARTING Processes\n\n");
 	
 	processFCFS(pl);
-	
-
 
 	destroyProcessList(&pl);
+
 
 	return 0;
 }

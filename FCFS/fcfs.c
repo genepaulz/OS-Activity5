@@ -9,6 +9,7 @@ Process newProcess(int id, int at, int bt, int wt, int tat){
 	p->bt = bt;
 	p->wt = wt;
 	p->tat = tat;
+	p->index = 0;
 	return p;
 }
 
@@ -43,6 +44,7 @@ void addPProcess(ProcessList pl, Process p){
 		expandProcessList(pl, p);
 	}
 	else{
+	p->index = pl->count;
 	pl->pl[pl->count] = p;
 	pl->count++;
 	}
@@ -56,59 +58,11 @@ void addCProcess(ProcessList pl, int id, int at, int bt, int wt, int tat){
 void displayProcessList(ProcessList pl){
 	int i;
 	printf("\nProcess List :\n");
-	printf("ID	AT	BT	WT	TAT\n");
+	printf("Process	BT	AT	WT	TAT\n");
 	for ( i = 0 ; i < pl->count ; i++){
-		printf("P%d	%d	%d	%d	%d\n",pl->pl[i]->id, pl->pl[i]->at, pl->pl[i]->bt, pl->pl[i]->wt, pl->pl[i]->tat);
+		printf("P%d	%d	%d	%d	%d\n",pl->pl[i]->id, pl->pl[i]->bt, pl->pl[i]->at, pl->pl[i]->wt, pl->pl[i]->tat);
 	}
 }
-
-//void processFCFS(ProcessList pl){
-//	int CLOCK = 0;
-//	double AWT = 0.0;
-//	double ATAT = 0.0;
-//	int tbt = 0;
-//	int i, id, at, bt, wt, tat, j;
-//	
-//    for (i = 1; i < pl->count; i++) {
-//    	id = pl->pl[i]->id;
-//        at = pl->pl[i]->at;
-//        bt = pl->pl[i]->bt;
-//        wt = pl->pl[i]->wt;
-//        tat = pl->pl[i]->tat;
-//        j = i - 1; 
-//        
-//        while (j >= 0 && pl->pl[j]->at > at) {
-//            pl->pl[j + 1]->at = pl->pl[j]->at;
-//            pl->pl[j + 1]->id = pl->pl[j]->id;
-//            pl->pl[j + 1]->bt = pl->pl[j]->bt;
-//            pl->pl[j + 1]->wt = pl->pl[j]->wt;
-//            pl->pl[j + 1]->tat = pl->pl[j]->tat;
-//            j = j - 1;
-//        }
-//        pl->pl[j + 1]->id = id;
-//        pl->pl[j + 1]->at = at;
-//        pl->pl[j + 1]->bt = bt;
-//        pl->pl[j + 1]->wt = wt;
-//        pl->pl[j + 1]->tat = tat;
-//    }    
-//   	for(i = 0 ; i < pl->count ; i++ ){
-//   		CLOCK+= pl->pl[i]->bt;
-//   		tbt+=pl->pl[i]->bt;
-//   		pl->pl[i]->tat = abs(CLOCK - pl->pl[i]->at);
-//   		ATAT += pl->pl[i]->tat;
-//   		pl->pl[i]->wt = abs(pl->pl[i]->tat - pl->pl[i]->bt);
-//   		AWT += pl->pl[i]->wt;
-//	}
-//	ATAT/=pl->count+1;
-//	AWT/=pl->count+1;
-//	printf("\nFCFS\n");
-//	printf("Process	AT	BT	WT	TAT\n");
-//	for( i = 0 ; i < pl->count ; i++ ){
-//		printf("P%d	%d	%d	%d	%d\n",pl->pl[i]->id, pl->pl[i]->at, pl->pl[i]->bt, pl->pl[i]->wt, pl->pl[i]->tat);
-//	}
-//	printf("AveWT: %.2f\nAveTAT: %.2f",AWT,ATAT);
-//	printf("\n%d\n",tbt);
-//}
 
 void processFCFS(ProcessList pl){
 	int CLOCK = 0;
@@ -116,19 +70,7 @@ void processFCFS(ProcessList pl){
 	double ATAT = 0.0f;
 	Queue q = newQueue();
 	
-	int i;
-	int n = pl->count;
-	int tbt;
-	for( i = 0; i < n; i++ ){
-		tbt += pl->pl[i]->bt;
-	}
-	int j;
-	
-	int processed = 0;
-	int current = 0;
-	int sum = 0;
-	
-	ProcessList done = newProcessList(n);
+	int j, n = pl->count, processed = 0, current = 0;		
 	
 	while( processed < n ){
 		
@@ -139,18 +81,15 @@ void processFCFS(ProcessList pl){
 		}
 		CLOCK++;
 		if( !isEmpty(q) ){
-			current--;
-			sum = current + head(q)->bt;
-			if( sum == 0 ){
+			current++;
+			if( current == head(q)->bt ){
 				current = 0;
-				sum = 0;
 				
-				done->pl[processed] = head(q);
-				done->count++;
-				done->pl[processed]->tat = abs(CLOCK - done->pl[processed]->at);
-				ATAT += done->pl[processed]->tat;
-				done->pl[processed]->wt = abs(done->pl[processed]->tat - done->pl[processed]->bt);
-				AWT += done->pl[processed]->at;
+				pl->pl[head(q)->index] = head(q);
+				pl->pl[head(q)->index]->tat = abs(CLOCK - pl->pl[head(q)->index]->at);
+				ATAT += pl->pl[head(q)->index]->tat;
+				pl->pl[head(q)->index]->wt = abs(pl->pl[head(q)->index]->tat - pl->pl[head(q)->index]->bt);
+				AWT += pl->pl[head(q)->index]->wt;
 				
 				dequeue(q);
 				processed++;
@@ -159,10 +98,61 @@ void processFCFS(ProcessList pl){
 	}	
 	ATAT/=n;
 	AWT/=n;
-	displayProcessList(done);
+	
+	displayProcessList(pl);
 	printf("AveWT: %.2f\nAveTAT: %.2f",AWT,ATAT);
 	printf("		FCFS Processing\n\n");
-	destroyProcessList(&done);
+	destroy(&q);
+}
+
+void processSJF(ProcessList pl){
+	int CLOCK = 0 ;
+	double AWT = 0.0f;
+	double ATAT = 0.0f;
+	Queue q = newQueue();
+	
+	int i, n = pl->count, processed = 0, current = 0;
+	
+	while( processed < n ){
+		
+		if( current == 0 ){
+			for ( i = 0 ; i < n ; i ++ ){
+				if( CLOCK == pl->pl[i]->at){
+					enqueue(q,pl->pl[i]);
+				}			
+			}
+			sortQueue(q);
+		}
+		else{
+			for ( i = 0 ; i < n ; i ++ ){
+				if( CLOCK == pl->pl[i]->at){
+					enqueue(q,pl->pl[i]);
+				}			
+			}
+		}
+		CLOCK++;
+		if( !isEmpty(q) ){
+			current++;
+			if( current == head(q)->bt ){
+				current = 0;
+				
+				pl->pl[head(q)->index] = head(q);
+				pl->pl[head(q)->index]->tat = abs(CLOCK - pl->pl[head(q)->index]->at);
+				ATAT += pl->pl[head(q)->index]->tat;
+				pl->pl[head(q)->index]->wt = abs(pl->pl[head(q)->index]->tat - pl->pl[head(q)->index]->bt);
+				AWT += pl->pl[head(q)->index]->wt;
+				
+				dequeue(q);
+				processed++;
+			}
+		}
+	}	
+	ATAT/=n;
+	AWT/=n;
+	
+	displayProcessList(pl);
+	printf("AveWT: %.2f\nAveTAT: %.2f",AWT,ATAT);
+	printf("		SJF Processing\n\n");
 	destroy(&q);
 }
 
@@ -175,6 +165,7 @@ void destroyProcessList(ProcessList *pl){
 Queue newQueue(){
 	Queue q = (Queue)malloc(sizeof(struct queue));
 	q->front = q->rear = NULL;
+	q->count = 0;
 	return q;
 }
 nodeptr createNode(qItem item){
@@ -194,21 +185,74 @@ void enqueue(Queue q, qItem item){
 		q->front = temp;
 	}
 	q->rear = temp;
+	q->count++;
 }
 
 void dequeue(Queue q){
 	nodeptr p = q->front;
 	if( p != NULL ){
-		p->prev = NULL;
 		q->front = p->next;
+		p->prev = p->next = NULL;
 		free(p);
 		if( q->front == NULL)
 			q->rear = NULL;
+			
+		q->count--;
+	}
+}
+
+void sortQueue(Queue q){
+	int i, key, j;
+	Process swap1,swap2;
+	int n = q->count;
+	Process p[q->count];
+	for( i = 0 ; i < n ; i++ ){
+		p[i] = head(q);
+		dequeue(q);
+	}
+	
+    for (i = 1; i < n; i++) {
+        key = p[i]->bt;
+        swap1 = p[i];
+        j = i - 1;
+ 
+        /* Move elements of arr[0..i-1], that are
+          greater than key, to one position ahead
+          of their current position */
+        while (j >= 0 && p[j]->bt > key) {
+        	swap2 = p[j];
+            p[j + 1] = swap2;
+            j = j - 1;
+        }
+        p[j + 1] = swap1;
+    }
+	for( i = 0 ; i < n ; i++ ){
+		enqueue(q,p[i]);
+	}
+}
+
+void removeItem(Queue q, qItem item){
+	nodeptr p = q->front;
+	if( p != NULL ){
+		while( p != NULL ){
+			if( p->p == item ){
+				if( p == q->front ){
+					dequeue(q);
+				}
+				else if( p == q->rear ){
+					q->rear = p->prev;
+					p->prev = p->next = NULL;
+					free(p);
+				}
+			}
+			p = p->next;
+		}
+		q->count--;
 	}
 }
 
 int isEmpty(Queue q){
-	return q->front == NULL;
+	return q->count == 0;
 }
 
 void clear(Queue q){
